@@ -12,8 +12,8 @@ module.exports = {
     },
     register: (req, res) => {
         let insertScript = `INSERT INTO users values 
-        (null,'${req.body.username}', '${req.body.email}', 
-        '${req.body.telp}', '${req.body.role}', '${req.body.status}',${req.body.usia}, 0);`
+        (null,'${req.body.username}', '${req.body.email}', '${req.body.password}', 
+        '${req.body.telp}', 'User', 'Unverified');`
 
         db.query(insertScript, (err, results) => {
             if (err) {
@@ -24,7 +24,16 @@ module.exports = {
         })
     },
     login: (req, res) => {
+        let loginScript = `Select * from users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`
 
+        db.query(loginScript, (err, results) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send(err);
+            }
+
+            res.status(200).send({ messages: "Login Success ✅", results })
+        })
     },
     updateData: (req, res) => {
 
