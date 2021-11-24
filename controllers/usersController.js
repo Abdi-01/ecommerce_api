@@ -13,7 +13,7 @@ module.exports = {
     register: (req, res) => {
         let insertScript = `INSERT INTO users values 
         (null,'${req.body.username}', '${req.body.email}', '${req.body.password}', 
-        '${req.body.telp}', 'User', 'Unverified');`
+        '${req.body.telp}', 'user', 'Unverified');`
 
         db.query(insertScript, (err, results) => {
             if (err) {
