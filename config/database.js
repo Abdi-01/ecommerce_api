@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const util = require('util')
 
 const db = mysql.createPool({
     host: "localhost",
@@ -8,4 +9,7 @@ const db = mysql.createPool({
     port: 3306
 })
 
-module.exports = { db }
+// mengaktifkan promise pada method db.query
+const dbQuery = util.promisify(db.query).bind(db)
+
+module.exports = { db, dbQuery }
