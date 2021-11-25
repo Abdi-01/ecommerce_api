@@ -67,7 +67,7 @@ module.exports = {
             let sqlProduct = `INSERT INTO products values (null, '${name}', '${brand}', '${category}', '${description}', ${stock}, ${price}, 'ready');`
 
             let insertProduct = await dbQuery(sqlProduct);
-            console.log(insertId)
+            console.log(insertProduct.insertId)
             if (insertProduct.insertId) {
                 for (let i = 0; i < images.length; i++) {
                     await dbQuery(`INSERT INTO product_image values (null, ${insertProduct.insertId}, '${images[i]}')`)
@@ -78,6 +78,32 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
+        }
+    },
+    deleteProduct: async (req, res) => {
+        try {
+            // console.log(req.params)
+            let sqlProduct = `DELETE from products WHERE idproduct=${req.params.idproduct};`
+
+            let getProductImage = `SELECT idproduct_image from product_image where idproduct=${req.params.idproduct};`
+
+            await dbQuery(sqlProduct)
+
+            getProductImage = await dbQuery(getProductImage);
+
+            console.log(getProductImage)
+            if (getProductImage.length > 0) {
+                for (let i = 0; i < getProductImage.length; i++) {
+                    await dbQuery(`DELETE from product_image WHERE idproduct_image=${getProductImage[i].idproduct_image};`)
+                }
+            }
+
+
+            res.status(200).send({ message: "Delete product success ✅" })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error)
         }
     }
 }
