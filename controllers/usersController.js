@@ -29,7 +29,7 @@ module.exports = {
     login: (req, res) => {
         let hashPassword = Crypto.createHmac("sha256","key_password").update(req.body.password).digest("hex")
         let loginScript = `Select * from users WHERE email = '${req.body.email}' AND password = '${hashPassword}';`
-
+        
         db.query(loginScript, (err, results) => {
             if (err) {
                 console.log(err);
@@ -38,6 +38,7 @@ module.exports = {
 
             // delete results[0].password;
 
+            console.log(loginScript)
             res.status(200).send({ messages: "Login Success ✅", results })
         })
     },

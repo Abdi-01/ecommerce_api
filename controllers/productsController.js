@@ -105,5 +105,26 @@ module.exports = {
             console.log(error);
             res.status(500).send(error)
         }
+    },
+    updateProduct: async (req, res) => {
+        try {
+            console.log(req.body)
+            let { idproduct, name, brand, category, stock, price, description, images } = req.body
+            // 1. memperbarui data table products utama
+            let resUpdate = await dbQuery(`UPDATE products set name=${db.escape(name)}, brand=${db.escape(brand)},
+            category=${db.escape(category)},description=${db.escape(description)},stock=${db.escape(stock)},price=${db.escape(price)} 
+            WHERE idproduct=${db.escape(idproduct)};`);
+
+            // 2. memperbarui data table product_image
+            images.forEach(async (value, index) => {
+                await dbQuery(`UPDATE product_image set url=${db.escape(value.url)} 
+                WHERE idproduct_image=${value.idproduct_image}`)
+            })
+
+            res.status(200).send({ message: "Update product success✅", success: true })
+
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
