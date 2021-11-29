@@ -16,5 +16,21 @@ module.exports = {
             console.log(error)
             res.status(500).send(error)
         }
+    },
+    addCart: async (req, res) => {
+        try {
+            let insertCart = `INSERT INTO cart values (null, ${db.escape(req.body.idproduct)}, 
+            ${db.escape(req.body.iduser)}, ${db.escape(req.body.qty)});`
+
+            insertCart = await dbQuery(insertCart)
+
+            if (insertCart.insertId) {
+                res.status(200).send({ message: "Add to cart success ✅", success: true })
+            }
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).send(error)
+        }
     }
 }
