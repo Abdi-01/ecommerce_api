@@ -6,7 +6,8 @@ module.exports = {
             let selectCart = `Select c.*, p.name, p.price, pi.url as url_image from cart c
             JOIN products p on c.idproduct = p.idproduct
             JOIN users u on c.iduser = u.iduser 
-            JOIN product_image pi on p.idproduct = pi.idproduct GROUP BY c.idcart;`
+            JOIN product_image pi on p.idproduct = pi.idproduct WHERE u.iduser =${db.escape(req.query.iduser)} 
+            GROUP BY c.idcart;`
 
             selectCart = await dbQuery(selectCart);
 
