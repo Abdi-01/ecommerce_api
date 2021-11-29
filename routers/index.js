@@ -1,7 +1,9 @@
 const usersRouter = require('./usersRouter');
 const productsRouter = require('./productsRouter')
+const transactionsRouter = require('./transactionsRouter')
 
-module.exports={
+module.exports = {
     usersRouter,
-    productsRouter
+    productsRouter,
+    transactionsRouter
 }

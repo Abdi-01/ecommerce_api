@@ -23,9 +23,10 @@ app.get('/', (req, res) => {
 
 
 // Konfigurasi routing
-const { usersRouter, productsRouter } = require('./routers')
+const { usersRouter, productsRouter, transactionsRouter } = require('./routers')
 
 app.use("/users", usersRouter)
 app.use("/products", productsRouter)
+app.use("/transactions", transactionsRouter)
 
 app.listen(PORT, () => console.log('Eccommerce API RUNNING :', PORT))
