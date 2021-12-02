@@ -1,6 +1,7 @@
-const { db } = require('../config/database');
+const { db, dbQuery } = require('../config/database');
 const Crypto = require('crypto');
 const { createToken } = require("../config/token");
+const { transporter } = require("../config/nodemailer")
 
 module.exports = {
     getData: (req, res) => {
@@ -12,20 +13,38 @@ module.exports = {
             res.status(200).send(results)
         })
     },
-    register: (req, res) => {
-        // enkripsi password/hashing password
-        let hashPassword = Crypto.createHmac("sha256", "key_password").update(req.body.password).digest("hex")
-        let insertScript = `INSERT INTO users values 
-        (null,'${req.body.username}', '${req.body.email}', '${hashPassword}', 
-        '${req.body.telp}', 'user', 'Unverified');`
+    register: async (req, res) => {
+        try {
+            // enkripsi password/hashing password
+            let hashPassword = Crypto.createHmac("sha256", "key_password").update(req.body.password).digest("hex")
+            let insertScript = `INSERT INTO users values (null,'${req.body.username}', '${req.body.email}', '${hashPassword}', '${req.body.telp}', 'user', 'Unverified');`
 
-        db.query(insertScript, (err, results) => {
-            if (err) {
-                console.log(err)
-                res.status(500).send(err)
+            let insertSQL = await dbQuery(insertScript);
+
+            let results = await dbQuery(`Select * from users where iduser = ${insertSQL.insertId};`);
+            if (results.length > 0) {
+                let { iduser, username, email, telp, role, status } = results[0];
+                let token = createToken({ iduser, username, email, telp, role, status });
+
+                // konfigurasi email
+                await transporter.sendMail({
+                    from: `Admin Ecommerce API`,
+                    to: "emailtujuan@gmail.com",
+                    subject: "Konfirmasi Register",
+                    html: `<div>
+                    <h4>Berikut link verifikasi email anda</h4>
+                    <a href='http://localhost:3000/verification/${token}'>Klik, Verifikasi Email</a>
+                    </div>`
+                })
+                res.status(200).send({ messages: "Register success ✅", success: true })
+            } else {
+                res.status(500).send({ messages: "Register failed ❌" })
             }
-            res.status(200).send({ messages: "Register success ✅", results })
-        })
+
+        } catch (error) {
+            console.log(err)
+            res.status(500).send(err)
+        }
     },
     login: (req, res) => {
         let hashPassword = Crypto.createHmac("sha256", "key_password").update(req.body.password).digest("hex")
@@ -73,10 +92,10 @@ module.exports = {
                 res.status(200).send({
                     messages: "Login Success ✅", loginData: {
                         iduser,
-                        username, 
-                        email, 
-                        telp, 
-                        role, 
+                        username,
+                        email,
+                        telp,
+                        role,
                         status,
                         token
                     }
