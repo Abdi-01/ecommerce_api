@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const PORT = 2025;
 const cors = require('cors');
+const bearerToken = require("express-bearer-token")
 
+app.use(bearerToken());// untuk mengambil data token dari request header client
 app.use(cors());
 app.use(express.json());
 

@@ -1,5 +1,6 @@
-const { db } = require('../config/database')
-const Crypto = require('crypto')
+const { db } = require('../config/database');
+const Crypto = require('crypto');
+const { createToken } = require("../config/token");
 
 module.exports = {
     getData: (req, res) => {
@@ -27,23 +28,38 @@ module.exports = {
         })
     },
     login: (req, res) => {
-        let hashPassword = Crypto.createHmac("sha256","key_password").update(req.body.password).digest("hex")
+        let hashPassword = Crypto.createHmac("sha256", "key_password").update(req.body.password).digest("hex")
         let loginScript = `Select * from users WHERE email = '${req.body.email}' AND password = '${hashPassword}';`
-        
+
         db.query(loginScript, (err, results) => {
             if (err) {
                 console.log(err);
                 res.status(500).send(err);
             }
+            if (results.length > 0) {
+                let { iduser, username, email, telp, role, status } = results[0]
+                let token = createToken({ iduser, username, email, telp, role, status })
+                console.log(token)
 
-            // delete results[0].password;
-
-            console.log(loginScript)
-            res.status(200).send({ messages: "Login Success ✅", results })
+                res.status(200).send({
+                    messages: "Login Success ✅", loginData: {
+                        iduser,
+                        username,
+                        email,
+                        telp,
+                        role,
+                        status,
+                        token
+                    }
+                })
+            } else {
+                res.status(401).send({ messages: "User not found ❌" })
+            }
         })
     },
     keepLogin: (req, res) => {
-        let loginScript = `Select * from users WHERE email = '${req.body.email}' AND password = '${req.body.password}';`
+        console.log(req.dataUser)
+        let loginScript = `Select * from users WHERE iduser=${req.dataUser.iduser} ;`
 
         db.query(loginScript, (err, results) => {
             if (err) {
@@ -51,9 +67,24 @@ module.exports = {
                 res.status(500).send(err);
             }
 
-            // delete results[0].password;
+            if (results.length > 0) {
+                let { iduser, username, email, telp, role, status } = results[0];
+                let token = createToken({ iduser, username, email, telp, role, status });
+                res.status(200).send({
+                    messages: "Login Success ✅", loginData: {
+                        iduser,
+                        username, 
+                        email, 
+                        telp, 
+                        role, 
+                        status,
+                        token
+                    }
+                });
+            } else {
+                res.status(401).send({ messages: "User not found ❌" });
+            }
 
-            res.status(200).send({ messages: "Login Success ✅", results })
         })
     },
     updateData: (req, res) => {

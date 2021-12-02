@@ -3,10 +3,11 @@ const { db, dbQuery } = require("../config/database")
 module.exports = {
     getCart: async (req, res) => {
         try {
+            // console.log("cek data token",req.dataUser)
             let selectCart = `Select c.*, p.name, p.price, pi.url as url_image from cart c
             JOIN products p on c.idproduct = p.idproduct
             JOIN users u on c.iduser = u.iduser 
-            JOIN product_image pi on p.idproduct = pi.idproduct WHERE u.iduser =${db.escape(req.query.iduser)} 
+            JOIN product_image pi on p.idproduct = pi.idproduct WHERE u.iduser =${db.escape(req.dataUser.iduser)} 
             GROUP BY c.idcart;`
 
             selectCart = await dbQuery(selectCart);
