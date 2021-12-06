@@ -106,7 +106,17 @@ module.exports = {
 
         })
     },
-    updateData: (req, res) => {
+    accountVerification: async (req, res) => {
+        try {
+            console.log("Output Token", req.dataUser)
+            let updateScript = `UPDATE users set status='Verified' WHERE iduser=${req.dataUser.iduser};`
 
+            let updateSQL = await dbQuery(updateScript);
+
+            res.status(200).send({ message: "Account Verified ✅", success: true })
+        } catch (error) {
+            console.log(error)
+            res.status(500).send(error)
+        }
     }
 }
