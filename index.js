@@ -3,6 +3,8 @@ const app = express();
 const PORT = 2025;
 const cors = require('cors');
 const bearerToken = require("express-bearer-token")
+const dotenv = require("dotenv");
+dotenv.config()
 
 app.use(bearerToken());// untuk mengambil data token dari request header client
 app.use(cors());

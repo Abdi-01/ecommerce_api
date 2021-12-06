@@ -29,7 +29,7 @@ module.exports = {
                 // konfigurasi email
                 await transporter.sendMail({
                     from: `Admin Ecommerce API`,
-                    to: "emailtujuan@gmail.com",
+                    to: process.env.EMAIL_TUJUAN,
                     subject: "Konfirmasi Register",
                     html: `<div>
                     <h4>Berikut link verifikasi email anda</h4>
