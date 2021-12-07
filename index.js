@@ -9,6 +9,7 @@ dotenv.config()
 app.use(bearerToken());// untuk mengambil data token dari request header client
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 // Memeriksa koneksi backend dengan mysql server
 const { db } = require('./config/database')

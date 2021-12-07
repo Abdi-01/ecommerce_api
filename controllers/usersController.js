@@ -36,9 +36,9 @@ module.exports = {
                     <a href='http://localhost:3000/verification/${token}'>Klik, Verifikasi Email</a>
                     </div>`
                 })
-                res.status(200).send({ messages: "Register success ✅", success: true })
+                res.status(200).send({ message: "Register success ✅\nPeriksa Email Anda", success: true })
             } else {
-                res.status(500).send({ messages: "Register failed ❌" })
+                res.status(500).send({ message: "Register failed ❌" })
             }
 
         } catch (error) {
