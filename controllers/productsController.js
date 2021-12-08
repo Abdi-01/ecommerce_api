@@ -75,18 +75,20 @@ module.exports = {
                     const filePath = req.files.images ? `/images/${req.files.images[0].filename}` : null;
 
                     let sqlProduct = `INSERT INTO products values (null, '${name}', '${brand}', '${category}', '${description}', ${stock}, ${price}, 'ready');`
-
-                    console.log("sqlScript products", sqlProduct);
-                    console.log("sqlScript product_images", `INSERT INTO product_image values (null, , '${filePath}')`)
-                    // let insertProduct = await dbQuery(sqlProduct);
+                    // console.log("sqlScript products", sqlProduct);
+                    // console.log("sqlScript product_images", `INSERT INTO product_image values (null, , '${filePath}')`)
+                    let insertProduct = await dbQuery(sqlProduct);
                     // console.log(insertProduct.insertId)
-                    // if (insertProduct.insertId) {
-                    //     for (let i = 0; i < images.length; i++) {
-                    //         await dbQuery(`INSERT INTO product_image values (null, ${insertProduct.insertId}, '${images[i]}')`)
-                    //     }
-
-                    //     res.status(200).send({ message: "Add product success ✅" })
-                    // }
+                    if (insertProduct.insertId) {
+                        //     for (let i = 0; i < images.length; i++) {
+                        //         await dbQuery(`INSERT INTO product_image values (null, ${insertProduct.insertId}, '${images[i]}')`)
+                        //     }
+                        if (filePath) {
+                            let sqlProductImg = `INSERT INTO product_image values (null, ${insertProduct.insertId}, 'http://localhost:2025${filePath}')`
+                            await dbQuery(sqlProductImg);
+                            res.status(200).send({ message: "Add product success ✅" })
+                        }
+                    }
                 } catch (error) {
                     fs.unlinkSync(`./public/images/${req.files.images[0].filename}`)
                     console.log(error);
