@@ -64,30 +64,29 @@ module.exports = {
     addProduct: async (req, res) => {
         try {
             // console.log(req.body)
-            const upload = uploader('/images', 'IMG').fields([{ name: 'images' }]);
+            // cara untuk upload 1 file
+            // const upload = uploader('/images', 'IMG').fields([{ name: 'images' }]);
+
+            //cara untuk upload multiple file 
+            const upload = uploader('/images', 'IMG').array("images", 5)
             upload(req, res, async (error) => {
                 try {
                     // Pengecekan
                     console.log(req.body.data);
-                    console.log(req.files.images)
+                    console.log("cek upload multiple file", req.files);
                     // Program sql
                     let { name, brand, category, stock, price, description, images } = JSON.parse(req.body.data);
-                    const filePath = req.files.images ? `/images/${req.files.images[0].filename}` : null;
 
                     let sqlProduct = `INSERT INTO products values (null, '${name}', '${brand}', '${category}', '${description}', ${stock}, ${price}, 'ready');`
-                    // console.log("sqlScript products", sqlProduct);
-                    // console.log("sqlScript product_images", `INSERT INTO product_image values (null, , '${filePath}')`)
                     let insertProduct = await dbQuery(sqlProduct);
-                    // console.log(insertProduct.insertId)
+
                     if (insertProduct.insertId) {
-                        //     for (let i = 0; i < images.length; i++) {
-                        //         await dbQuery(`INSERT INTO product_image values (null, ${insertProduct.insertId}, '${images[i]}')`)
-                        //     }
-                        if (filePath) {
+                        for (let i = 0; i < req.files.length; i++) {
+                            const filePath = req.files[i] ? `/images/${req.files[i].filename}` : null;
                             let sqlProductImg = `INSERT INTO product_image values (null, ${insertProduct.insertId}, 'http://localhost:2025${filePath}')`
                             await dbQuery(sqlProductImg);
-                            res.status(200).send({ message: "Add product success ✅" })
                         }
+                        res.status(200).send({ message: "Add product success ✅" })
                     }
                 } catch (error) {
                     fs.unlinkSync(`./public/images/${req.files.images[0].filename}`)

@@ -1,14 +1,14 @@
-const express = require('express');
+const express = require('express'); // module yang digunakan untuk konfigurasi back-end
 const app = express();
-const PORT = 2025;
-const cors = require('cors');
-const bearerToken = require("express-bearer-token")
-const dotenv = require("dotenv");
-dotenv.config()
+const cors = require('cors'); // digunakan untuk mengelola hak akses siapa saja user yang dpat mengakses backend
+const bearerToken = require("express-bearer-token"); // mengambil token dari request header
+const dotenv = require("dotenv"); // untuk mengamankan value konfigurasi middleware pada environtment
+dotenv.config(); // menjalankan dotenv 
+const PORT = process.env.PORT;
 
 app.use(bearerToken());// untuk mengambil data token dari request header client
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // untuk mengambil data dari req.body
 app.use(express.static('public'));
 
 // Memeriksa koneksi backend dengan mysql server
